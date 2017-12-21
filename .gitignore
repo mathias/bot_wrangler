@@ -1,0 +1,5 @@
+halite
+*.log
+*.hlt
+
+.DS_Store
