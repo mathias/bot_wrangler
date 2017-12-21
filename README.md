@@ -1,11 +1,32 @@
 Bot Wrangler
 ===
 
-A framework for using the existing halite executable from halite.io to RL train bots, and other ML experiments.
+WIP: A framework for using the existing halite executable from halite.io to RL train bots, and other ML experiments.
 
-# Installation
+Thanks to:
 
-# Usage
+- @sigmavirus24 for pairing and teaching me more Python 3!
+- Two Sigma for creating halite.io
+
+## Installation
+
+```shell
+pip install -r requirements.txt
+```
+
+Also, make sure you have halite executable for your platform in the current dir. You can get it here: https://halite.io/learn-programming-challenge/downloads-and-starter-kits/
+
+## Usage
+
+```shell
+python server.py
+```
+
+## TODO:
+
+- [ ] Extract out efficient string send/read methods
+- [ ] Rewrite Python3 starter bot to use these methods from `server.py` rather than send/receiver STDIN/STDOUT directly.
+- [ ] Possibly an example RL starter bot kit, someday.
 
 # License
 
