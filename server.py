@@ -9,9 +9,16 @@ import random
 class Bot:
     def __init__(self, name):
         self.name = name
+        self.first_round = True
+
     def get_commands(self, input):
-        # For now, always move the first ship randomly
-        return "t 0 1 {}".format(random.randrange(0,359,1))
+        # If this is the first round, send back name
+        if self.first_round:
+            self.first_round = False
+            return "SimpleBot"
+        else:
+            # For now, always move the first ship randomly
+            return "t 0 1 {}".format(random.randrange(0,359,1))
 
 def parse_game_json(game_output):
     parsed = json.loads(game_output)
@@ -40,7 +47,7 @@ def main():
         # -q output JSON -- json is easier to parse winner.
         #    Later, we could calculate a score rather than just winner status from JSON
         executable = os.path.abspath("./halite")
-        command = executable + """ -q -d "240 160" "python client.py -p 5555" "python client.py -p 5556" """
+        command = executable + """ -r -q -d "240 160" "python client.py -p 5555" "python client.py -p 5556" """
 
         proc = subprocess.Popen(shlex.split(command), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
