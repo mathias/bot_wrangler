@@ -12,6 +12,7 @@ def parse_game_json(game_output):
     for bot_id in parsed['stats']:
         if parsed['stats'][bot_id]['rank'] == 1:
             winner = bot_id
+    # TODO mathias: data for computing reward here
     return { 'winner': winner }
 
 def main():
@@ -75,8 +76,6 @@ def main():
         # else:
         parsed_output = parse_game_json(outs)
         print("Winner: {}".format(parsed_output['winner']))
-    exit(0)
-
 
 if __name__ == '__main__':
     main()
