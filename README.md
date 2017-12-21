@@ -24,6 +24,7 @@ python server.py
 
 ## TODO:
 
+- [ ] Parse win/lose JSON at the end of each run of `halite`
 - [ ] Extract out efficient string send/read methods
 - [ ] Rewrite Python3 starter bot to use these methods from `server.py` rather than send/receiver STDIN/STDOUT directly.
 - [ ] Possibly an example RL starter bot kit, someday.
