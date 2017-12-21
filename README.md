@@ -1,7 +1,7 @@
 Bot Wrangler
 ===
 
-WIP: A framework for using the existing halite executable from halite.io to RL train bots, and other ML experiments.
+WIP: A framework for using the existing halite executable from halite.io to train RL bots, and other ML experiments.
 
 Thanks to:
 
