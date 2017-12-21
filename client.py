@@ -21,7 +21,15 @@ def main():
     sock.connect("tcp://127.0.0.1:{}".format(port))
 
     while True:
-        sock.send_string(f"hello from client")
-        print(sock.recv())
+        # 1. Read string from halite exe
+        request = sys.stdin.readline().rstrip('\n')
+        # 2. Send string to bot wrangler server
+        sock.send_string(request)
+        # 3. Read response from bot wrangler server
+        response = sock.recv().decode("utf-8")
+        # 4. Write response back to halite exe
+        sys.stdout.write(response)
+        sys.stdout.write('\n')
+        sys.stdout.flush()
 
 main()
