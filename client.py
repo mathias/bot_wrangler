@@ -32,4 +32,5 @@ def main():
         sys.stdout.write('\n')
         sys.stdout.flush()
 
-main()
+if __name__ == '__main__':
+    main()
