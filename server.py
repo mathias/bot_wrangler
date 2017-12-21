@@ -4,6 +4,14 @@ import shlex
 import subprocess
 import time
 import zmq
+import random
+
+class Bot:
+    def __init__(self, name):
+        self.name = name
+    def get_commands(self, input):
+        # For now, always move the first ship randomly
+        return "t 0 1 {}".format(random.randrange(0,359,1))
 
 def parse_game_json(game_output):
     parsed = json.loads(game_output)
@@ -32,9 +40,12 @@ def main():
         # -q output JSON -- json is easier to parse winner.
         #    Later, we could calculate a score rather than just winner status from JSON
         executable = os.path.abspath("./halite")
-        command = executable + """ -r -q -d "240 160" "python client.py -p 5555" "python client.py -p 5556" """
+        command = executable + """ -q -d "240 160" "python client.py -p 5555" "python client.py -p 5556" """
 
         proc = subprocess.Popen(shlex.split(command), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+
+        bot1 = Bot('SimpleBot1')
+        bot2 = Bot('SimpleBot2')
 
         send_name = True
         while proc.poll() is None:
@@ -44,11 +55,11 @@ def main():
                 input = socket1.recv_string(zmq.NOBLOCK)
                 #print("Got socket1: {} chars".format(len(input)))
 
-                # Form response to halite over socket
-                if send_name:
-                    socket1.send_string("SimpleBot1")
-                else:
-                    socket1.send_string("") # do nothing, to start
+                # Get commands to run
+                commands = bot1.get_commands(input)
+
+                # Respond over socket:
+                socket1.send_string(commands)
             except zmq.ZMQError:
                 continue
 
@@ -58,11 +69,9 @@ def main():
                 input = socket2.recv_string(zmq.NOBLOCK)
                 #print("Got socket2: {} chars".format(len(input)))
 
-                # Form response to halite over socket
-                if send_name:
-                    socket2.send_string("SimpleBot2")
-                else:
-                    socket2.send_string("") # do nothing, to start
+                commands = bot2.get_commands(input)
+                # Respond over socket:
+                socket2.send_string(commands)
             except zmq.ZMQError:
                 continue
 
