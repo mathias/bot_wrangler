@@ -32,9 +32,9 @@ def main():
         executable = os.path.abspath("./halite")
         command = executable + """ -r -q -d "240 160" "python client.py -p 5555" "python client.py -p 5556" """
 
-        # print(subprocess.check_output(command_to_run, shell=True).decode())
-        proc = subprocess.Popen(shlex.split(command), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(shlex.split(command), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
+        outs = ""
         send_name = True
         while proc.poll() is None:
             # Bot 1
@@ -61,18 +61,18 @@ def main():
 
             send_name = False
 
-        try:
-            outs, errs = proc.communicate(input=None, timeout=10)
-        except TimeoutExpired:
-            proc.kill()
-            outs, errs = proc.communicate(input=None, timeout=10)
-        print("Ended with {}".format(proc.returncode))
+            outs += proc.stdout.read()
+            # If we reach endgame, stop doing blocking communication over sockets
+            if len(outs) > 1:
+                break
+
+        while proc.poll() is None:
+            outs += proc.stdout.read()
 
         # TODO mathias: parse errors
         #if errs:
         #    print(f"Errors: {errs}")
         # else:
-        # TODO mathias: Why don't we ever get to this?
         parsed_output = parse_game_json(outs)
         print("Winner: {}".format(parsed_output['winner']))
     exit(0)
