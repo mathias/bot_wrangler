@@ -1,8 +1,18 @@
+import json
 import os
 import shlex
 import subprocess
 import time
 import zmq
+
+def parse_game_json(game_output):
+    parsed = json.loads(game_output)
+
+    winner = None
+    for bot_id in parsed['stats']:
+        if parsed['stats'][bot_id]['rank'] == 1:
+            winner = bot_id
+    return { 'winner': winner }
 
 def main():
     # ZeroMQ context
@@ -23,13 +33,14 @@ def main():
         command = executable + """ -r -q -d "240 160" "python client.py -p 5555" "python client.py -p 5556" """
 
         # print(subprocess.check_output(command_to_run, shell=True).decode())
-        p = subprocess.Popen(shlex.split(command))
+        proc = subprocess.Popen(shlex.split(command), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         send_name = True
-        while p.poll() is None:
+        while proc.poll() is None:
             # Bot 1
             # Read string from halite over socket
             input = socket1.recv().decode("utf-8") # Map
+            print("Got socket1: {} chars".format(len(input)))
 
             # Form response to halite over socket
             if send_name:
@@ -40,6 +51,7 @@ def main():
             # Bot 2
             # Read string from halite over socket
             input = socket2.recv().decode("utf-8") # Map
+            print("Got socket2: {} chars".format(len(input)))
 
             # Form response to halite over socket
             if send_name:
@@ -50,14 +62,19 @@ def main():
             send_name = False
 
         try:
-            outs, errs = proc.communicate(timeout=20)
+            outs, errs = proc.communicate(input=None, timeout=10)
         except TimeoutExpired:
             proc.kill()
-            outs, errs = proc.communicate()
-        print(outs)
-        # note: the errs seem to be the same output if error encountered:
+            outs, errs = proc.communicate(input=None, timeout=10)
+        print("Ended with {}".format(proc.returncode))
+
+        # TODO mathias: parse errors
         #if errs:
         #    print(f"Errors: {errs}")
+        # else:
+        # TODO mathias: Why don't we ever get to this?
+        parsed_output = parse_game_json(outs)
+        print("Winner: {}".format(parsed_output['winner']))
     exit(0)
 
 
