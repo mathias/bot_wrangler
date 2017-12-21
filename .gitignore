@@ -3,3 +3,8 @@ halite
 *.hlt
 
 .DS_Store
+
+# Python gitignores
+__pycache__/
+*.py[cod]
+*$py.class
