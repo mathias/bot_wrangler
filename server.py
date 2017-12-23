@@ -7,36 +7,7 @@ import time
 import zmq
 import numpy as np
 
-class Bot():
-    def __init__(self, name, subsock, pubsock):
-        self.name = name
-        # self.first_round = True
-        self.subsock = subsock
-        self.pubsock = pubsock
-        self.player_id = self.subsock.recv_string()
-        self.width, self.height = [int(x) for x in self.subsock.recv_string().strip().split()]
-
-        self.send_name = False
-        # Do map parsing here:
-        self.initial_data = self._parse_line(self.subsock.recv_string())
-        # TODO mathias: calculate voronai regions
-        # TODO mathias: calculate delauney lines
-        self.send_name = True
-        self.pubsock.send_string(self.name)
-
-    def step(self, received):
-        """ Called every frame """
-        if self.send_name:
-            self.send_name = False
-            return "SimpleBot"
-        else:
-            # For now, always move the first ship randomly
-            return "t 0 1 {}".format(np.random.random_integers(0,359))
-
-    def _parse_line(self, received):
-        None
-        # tokens = received.strip().split()
-        # players_count, tokens = Player._parse(tokens)
+from bot.bot import Bot
 
 def parse_game_json(game_output):
     parsed = json.loads(game_output)
@@ -135,12 +106,14 @@ def main():
         bot2pub.send_string("DONE")
 
         parsed_output = parse_game_json(outs)
-        if parsed_output['winner'][0]:
+        print(parsed_output)
+        if parsed_output['stats']['0']['rank'] == 1:
             print("Winner!")
             running_reward += 1.0
 
         print("Time to run one round: {} seconds".format(time.time() - round_start_time))
         print("Ended with {}".format(proc.returncode))
+        # now backprop that reward!
 
 if __name__ == '__main__':
     main()

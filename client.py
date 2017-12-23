@@ -3,7 +3,7 @@ import signal
 import sys
 import zmq
 
-class BotClient():
+class BotClient:
     def __init__(self):
         "Run the input/output socket back to the bot_wrangler server"
         args = self._parse_args()
