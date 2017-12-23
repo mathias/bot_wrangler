@@ -1,3 +1,4 @@
+import argparse
 import json
 import os
 import shlex
@@ -23,19 +24,36 @@ def main():
     # ZeroMQ context
     context = zmq.Context()
 
-    socket1 = context.socket(zmq.REP)
-    socket1.bind("tcp://127.0.0.1:5555")
+    bot1pub = context.socket(zmq.PUB)
+    bot1pub.bind("tcp://127.0.0.1:5555")
 
-    socket2 = context.socket(zmq.REP)
-    socket2.bind("tcp://127.0.0.1:5556")
+    bot1sub = context.socket(zmq.SUB)
+    # bot1sub.setsockopt(zmq.SUBSCRIBE, '')
+    # bot1sub.setsockopt(zmq.RCVBUF, 0)
+    bot1sub.connect("tcp://127.0.0.1:5556")
 
-    for r in range(1): # todo mathias: argparse a number of iterations here
+    bot2pub = context.socket(zmq.PUB)
+    bot2pub.bind("tcp://127.0.0.1:5557")
+
+    bot2sub = context.socket(zmq.SUB)
+    # bot2sub.setsockopt(zmq.SUBSCRIBE, '')
+    # bot2sub.setsockopt(zmq.RCVBUF, 0)
+    bot2sub.connect("tcp://127.0.0.1:5558")
+
+
+    parser = argparse.ArgumentParser(description="bot_wrangler server v0")
+    parser.add_argument('-i', '--iter', dest='iterations', help="How many iterations to run", default=1)
+    args = parser.parse_args()
+    iterations = int(args.iterations)
+
+    for r in range(iterations):
+        round_start_time = time.time()
         # halite options:
         # -r don't generate replays; remove this if you want replays from all your training
         # -q output JSON -- json is easier to parse winner.
         #    Later, we could calculate a score rather than just winner status from JSON
         executable = os.path.abspath("./halite")
-        command = executable + """ -r -q -d "240 160" "python client.py -p 5555" "python client.py -p 5556" """
+        command = executable + """ -r -q -d "240 160" "python client.py --sub 5555 --pub 5556" "python client.py --sub 5557 --pub 5558" """
 
         proc = subprocess.Popen(shlex.split(command), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
@@ -47,26 +65,26 @@ def main():
             try:
                 # Bot 1
                 # Read string from halite over socket
-                input = socket1.recv_string(zmq.NOBLOCK)
+                input = bot1sub.recv_string(zmq.NOBLOCK)
                 #print("Got socket1: {} chars".format(len(input)))
 
                 # Get commands to run
                 commands = bot1.get_commands(input)
 
                 # Respond over socket:
-                socket1.send_string(commands)
+                bot1pub.send_string(commands)
             except zmq.ZMQError:
                 continue
 
             try:
                 # Bot 2
                 # Read string from halite over socket
-                input = socket2.recv_string(zmq.NOBLOCK)
+                input = bot2sub.recv_string(zmq.NOBLOCK)
                 #print("Got socket2: {} chars".format(len(input)))
 
                 commands = bot2.get_commands(input)
                 # Respond over socket:
-                socket2.send_string(commands)
+                bot2pub.send_string(commands)
             except zmq.ZMQError:
                 continue
 
@@ -76,6 +94,11 @@ def main():
         except TimeoutExpired:
             proc.kill()
             outs, errs = proc.communicate(input=None, timeout=10)
+
+        bot1pub.send_string("DONE")
+        bot2pub.send_string("DONE")
+
+        print("Time to run one round: {} seconds".format(time.time() - round_start_time))
         print("Ended with {}".format(proc.returncode))
 
         # TODO mathias: parse errors
