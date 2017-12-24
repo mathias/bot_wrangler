@@ -3,7 +3,7 @@ import signal
 import sys
 import zmq
 
-class BotClient():
+class BotClient:
     def __init__(self):
         "Run the input/output socket back to the bot_wrangler server"
         args = self._parse_args()
@@ -11,12 +11,12 @@ class BotClient():
         pub_port = args.pub
         self.context = zmq.Context()
 
-        self.sub = context.socket(zmq.SUB)
+        self.sub = self.context.socket(zmq.SUB)
         # self.sub.setsockopt(zmq.SUBSCRIBE, '')
         # self.sub.setsockopt(zmq.RCVBUF, 0)
         self.sub.connect(f"tcp://127.0.0.1:{sub_port}")
 
-        self.pub = context.socket(zmq.PUB)
+        self.pub = self.context.socket(zmq.PUB)
         self.pub.bind(f"tcp://127.0.0.1:{pub_port}")
 
         # Set up signal handling
