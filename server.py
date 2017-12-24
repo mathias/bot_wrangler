@@ -61,8 +61,8 @@ def main():
 
         proc = subprocess.Popen(shlex.split(command), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
-        bot1 = Bot('SimpleBot1', bot1sub, bot1pub)
-        bot2 = Bot('SimpleBot2', bot2sub, bot1pub)
+        bot1 = Bot('SimpleBot1')
+        bot2 = Bot('SimpleBot2')
 
         while proc.poll() is None:
             try:

@@ -1,9 +1,10 @@
 import random
 
 class Bot():
-    def __init__(self, name, subsock, pubsock):
+    def __init__(self, name):
         self.name = name
         self.send_name = True
+        # Have 60 seconds to pre-process the board
 
     def step(self, received):
         """ Called every frame to get commands """
