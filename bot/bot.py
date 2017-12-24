@@ -2,12 +2,11 @@ import random
 
 class Bot():
     def __init__(self, name, subsock, pubsock):
-        print(f"setup {name}")
         self.name = name
         self.send_name = True
 
     def step(self, received):
-        """ Called every frame """
+        """ Called every frame to get commands """
         if self.send_name:
             self.send_name = False
             return "SimpleBot"
@@ -16,6 +15,7 @@ class Bot():
             return "t 0 1 {}".format(random.random_integers(0,359))
 
     def update_map(self, received):
+        """ Called every frame to update internal game state """
         players_count, tokens = self._parse_line(received)
         print("tokens")
 

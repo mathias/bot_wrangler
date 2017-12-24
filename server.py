@@ -109,15 +109,19 @@ def main():
         bot2pub.send_string("DONE")
 
         parsed_output = parse_game_json(outs)
-        print(parsed_output)
+        # print(parsed_output)
         if parsed_output['stats']['0']['rank'] == 1:
-            print("Winner!")
+            print("bot1: Winner!")
             running_reward += 1.0
+        else:
+            print("bot2: Winner!")
+
 
         ep_history.append(running_reward)
 
-        print("Time to run one round: {} seconds".format(time.time() - round_start_time))
-        print("Ended with {}".format(proc.returncode))
+        print("Time for round: {} seconds".format(time.time() - round_start_time))
+        print("halite process ended with code {}".format(proc.returncode))
+        print("")
         # now backprop that reward!
     print("Reward overall was: {}".format(ep_history))
 
