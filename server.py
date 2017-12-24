@@ -110,6 +110,8 @@ def main():
 
         parsed_output = parse_game_json(outs)
         # print(parsed_output)
+
+        print(f"Round #{r}")
         if parsed_output['stats']['0']['rank'] == 1:
             print("bot1: Winner!")
             running_reward += 1.0

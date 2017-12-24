@@ -1,4 +1,5 @@
 import random
+from bot.hlt import *
 
 class Bot():
     def __init__(self, name):
