@@ -124,8 +124,7 @@ def main():
         print("Time for round: {} seconds".format(time.time() - round_start_time))
         print("halite process ended with code {}".format(proc.returncode))
         print("")
-        # now backprop that reward!
-    print("Reward overall was: {}".format(ep_history))
+    print("Reward history was: {}".format(ep_history))
 
 if __name__ == '__main__':
     main()
