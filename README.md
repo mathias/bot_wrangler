@@ -31,6 +31,10 @@ python server.py
 
 # License
 
+The `environment` directory is from the Two Sigma [Halite-II](https://github.com/HaliteChallenge/Halite-II/) repo and is licensed [under an MIT license](https://github.com/HaliteChallenge/Halite-II/blob/master/LICENSE).
+
+This code is:
+
 Copyright (c) 2017 Matt Gauger
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
