@@ -44,11 +44,11 @@ def main():
 
     print("Setup took: {} seconds".format(time.time() - setup_start_time))
 
+    ep_history = []
     for r in range(iterations):
         round_start_time = time.time()
 
-        running_reward = 0
-        ep_history = []
+        running_reward = 0.0
 
         # Running a new halite executable is the equiv openai gym env.reset():
 
@@ -69,13 +69,14 @@ def main():
                 # Bot 1
                 # Read string from halite over socket
                 received = bot1sub.recv_string(zmq.NOBLOCK)
-                #print("Got socket1: {} chars".format(len(input)))
 
-                # Get commands to run
-                commands = bot1.step(received)
+                if received:
+                    # Get commands to run
+                    bot1.update_map(received)
+                    commands = bot1.step()
 
-                # Respond over socket:
-                bot1pub.send_string(commands)
+                    # Respond over socket:
+                    bot1pub.send_string(commands)
             except zmq.ZMQError:
                 continue
 
@@ -85,10 +86,12 @@ def main():
                 received = bot2sub.recv_string(zmq.NOBLOCK)
                 #print("Got socket2: {} chars".format(len(input)))
 
-                commands = bot2.step(received)
-                # Respond over socket:
-                bot2pub.send_string(commands)
+                if received:
+                    bot2.update_map(received)
+                    commands = bot2.step()
 
+                    # Respond over socket:
+                    bot2pub.send_string(commands)
             except zmq.ZMQError:
                 continue
 
@@ -111,9 +114,12 @@ def main():
             print("Winner!")
             running_reward += 1.0
 
+        ep_history.append(running_reward)
+
         print("Time to run one round: {} seconds".format(time.time() - round_start_time))
         print("Ended with {}".format(proc.returncode))
         # now backprop that reward!
+    print("Reward overall was: {}".format(ep_history))
 
 if __name__ == '__main__':
     main()

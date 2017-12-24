@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O3 -Wall -Wno-sign-compare -Wno-unused-function -pedantic -march=native")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O2 -Wall -Wno-sign-compare -Wno-unused-function -pedantic -march=native")
 
 # versions of cmake before 3.4 always link with -rdynamic on linux, which breaks static linkage with clang
 # unfortunately travis right now only has cmake 3.2, so have to do this workaround for now
