@@ -14,7 +14,15 @@ Thanks to:
 pip install -r requirements.txt
 ```
 
-Also, make sure you have halite executable for your platform in the current dir. You can get it here: https://halite.io/learn-programming-challenge/downloads-and-starter-kits/
+This project uses a customized version of the `halite` executable that sends SIGINT instead of SIGKILL to each bot at the end of each game. (Because we can capture and handle SIGINT but not SIGKILL in Python.) To build the custom halite:
+
+```shell
+cd environment
+cmake .
+make
+cp halite ../
+cd ..
+```
 
 ## Usage
 
